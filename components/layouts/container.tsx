@@ -6,7 +6,7 @@ const Container = ({ children }: { children: React.ReactNode }) => {
         "bg-zinc-50 dark:bg-zinc-900 transition-[margin-left] ease-in-out duration-300 flex-1 overflow-y-auto  p-6    w-full h-full"
       )}
     >
-     <div className="w-full h-full  border bg-card text-card-foreground shadow rounded-lg border-none  p-4 ">
+     <div className="w-full min-h-full  border bg-card text-card-foreground shadow rounded-lg border-none  p-4 ">
      {children}
      </div>
     </main>

@@ -3,18 +3,15 @@
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-
+import { cn } from "@/lib/utils";
+import Link from "next/link";
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { ChevronRight, ChevronDown } from "lucide-react";
+
+import { ChevronRight, ChevronDown, LucideIcon } from "lucide-react";
 import { usePathname } from "next/navigation";
 
 import {
@@ -23,11 +20,22 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { DropdownMenuArrow } from "@radix-ui/react-dropdown-menu";
+
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export interface MenuItem {
   title: string;
-  icon?: React.ReactNode;
-  href?: string;
+  icon?: LucideIcon;
+  href: string;
   children?: MenuItem[];
 }
 
@@ -48,7 +56,8 @@ const MenuItem = ({
   const [isOpen, setIsOpen] = useState(false);
   const paddingLeft = depth * 12 + 16;
   const pathname = usePathname();
-  const isActive = item.href === pathname;
+
+  const isActive = pathname.includes(item.href);
 
   useEffect(() => {
     if (isCollapsed) {
@@ -67,7 +76,7 @@ const MenuItem = ({
               style={{ paddingLeft: `${paddingLeft + 8}px` }}
             >
               <span className="flex items-center">
-                {item.icon}
+                {item.icon && <item.icon />}
                 <span className="ml-2 font-medium">{item.title}</span>
               </span>
               {isOpen ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
@@ -98,8 +107,7 @@ const MenuItem = ({
           style={{ paddingLeft: `${paddingLeft + 8}px` }}
         >
           <a href={item.href}>
-            <span className="w-[20px] block">{item.icon}</span>
-
+            <span className="w-[20px] block">{item.icon && <item.icon />}</span>
             <span className="ml-2">{item.title}</span>
           </a>
         </Button>
@@ -109,23 +117,58 @@ const MenuItem = ({
 
   if (isCollapsed) {
     return (
-      <Popover>
-        <PopoverTrigger asChild>
-          <Button variant="ghost" className="w-full p-2 justify-center">
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>{item.icon}</TooltipTrigger>
-                <TooltipContent side="right" align="center">
-                  {item.title}
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent className="w-56 p-0" align="start" side="right">
-          <MenuItem item={item} isCollapsed={false} depth={0} />
-        </PopoverContent>
-      </Popover>
+      <>
+        <DropdownMenu>
+          <TooltipProvider disableHoverableContent>
+            <Tooltip delayDuration={100}>
+              <TooltipTrigger asChild>
+                <DropdownMenuTrigger asChild>
+                  <Link href={item.href}>
+                    <Button
+                      variant={isActive ? "secondary" : "ghost"}
+                      className="w-full justify-start h-10 mb-1"
+                    >
+                      <div className="w-full items-center flex justify-between">
+                        <div className="flex items-center">
+                          <span className={cn(isOpen === false ? "" : "mr-4")}>
+                            {item.icon ? (
+                              <item.icon />
+                            ) : (
+                              <span className="overflow-ellipsis overflow-hidden whitespace-nowrap w-[20px]">
+                                {item.title}
+                              </span>
+                            )}
+                          </span>
+                        </div>
+                      </div>
+                    </Button>
+                  </Link>
+                </DropdownMenuTrigger>
+              </TooltipTrigger>
+              <TooltipContent side="right" align="start">
+                {item.title}
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+
+          {item.children && (
+            <DropdownMenuContent side="right" align="start" sideOffset={25}>
+              <DropdownMenuLabel className="max-w-[190px] truncate">
+                {item.title}
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              {item.children?.map(({ href, title }, index) => (
+                <DropdownMenuItem key={index} asChild>
+                  <Link className="cursor-pointer" href={href}>
+                    <p className="max-w-[180px] truncate">{title}</p>
+                  </Link>
+                </DropdownMenuItem>
+              ))}
+              <DropdownMenuArrow className="fill-border" />
+            </DropdownMenuContent>
+          )}
+        </DropdownMenu>
+      </>
     );
   }
 

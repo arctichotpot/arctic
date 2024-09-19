@@ -1,4 +1,7 @@
 import React from "react";
+import { title } from "@/lib/site";
+import Image from "next/image";
+import appLogo from "@/assets/app_logo.png";
 
 const Logo: React.FC<{ isCollapsed: boolean }> = ({ isCollapsed }) => (
   <div
@@ -6,13 +9,13 @@ const Logo: React.FC<{ isCollapsed: boolean }> = ({ isCollapsed }) => (
       isCollapsed ? "justify-center" : "justify-start px-4"
     } h-14`}
   >
-    {isCollapsed ? (
-      <div className="w-8 h-8 bg-primary rounded-full ease-in-out" />
-    ) : (
-      <>
-        <div className="w-8 h-8 bg-primary rounded-full mr-2 ease-in-out" />
-        <span className="text-lg font-bold ease-in-out">Your App</span>
-      </>
+    <Image
+      src={appLogo}
+      alt={title}
+      className="w-8 h-8 rounded-full ease-in-out  border-2"
+    />
+    {!isCollapsed && (
+      <span className="text-lg font-bold ease-in-out ml-2">{title}</span>
     )}
   </div>
 );
