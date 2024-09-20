@@ -6,6 +6,3 @@
 - tailwindcss(✅)
 - trpc()
 - next-auth()
-
-
-
